@@ -1,0 +1,2 @@
+zmac root.asm
+pause
