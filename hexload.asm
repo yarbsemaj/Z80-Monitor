@@ -72,7 +72,4 @@ readnibble:
             sub 7           ; else subtract 'A'-'0' (17) and add 10
             ret
 			
-invalidtypestr:     .BYTE 10,13,"Bad Type",10,13,0
-badchecksumstr:     .BYTE 10,13,"Bad CS",10,13,0
-loadokstr:          .BYTE 10,13,"Ok",10,13,0
 .END

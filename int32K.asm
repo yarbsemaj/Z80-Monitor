@@ -46,18 +46,24 @@ RST00           DI                       ;Disable interrupts
 
                 .ORG     0008H
 RST08            JP      TXA
+invalidtypestr:     .BYTE "Ty",10,13,0
+
 
 ;------------------------------------------------------------------------------
 ; RX a character over RS232 Channel A [Console], hold here until char ready.
 
                 .ORG 0010H
 RST10            JP      RXA
+badchecksumstr:     .BYTE "CS",10,13,0
 
 ;------------------------------------------------------------------------------
 ; Check serial status
 
                 .ORG 0018H
 RST18            JP      CKINCHAR
+include	print.asm
+loadokstr:          .BYTE 10,13,0
+signOnMon:		.BYTE	"yarbsemaj MON",LF,CR, 0
 
 ;------------------------------------------------------------------------------
 ; RST 38 - INTERRUPT VECTOR [ for IM 1 ]
@@ -156,10 +162,5 @@ START:
                OUT       ($80),A         ; Initialise ACIA
                IM        1
                EI
-               LD        HL,SIGNON1      ; Sign-on message
-               CALL      rPrint           ; Output string
 			   JP		 StartMon		 ; Start Monitor
                
-SIGNON1:       .BYTE     CR,LF
-               .BYTE     "Z80 SBC By Grant S",CR,LF
-			   .BYTE     "Built by James Bray",CR,LF,0

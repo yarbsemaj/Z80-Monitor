@@ -20,8 +20,8 @@ READCOMMAND:
 				JR      Z, WRITE
 				CP      'E'
 				JR    	Z, EXICUTE
-				CP      'H'
-				JR      Z, HELP
+				CP      'B'
+				JP      Z, STARTB
 				JR		READCOMMAND
 ; Input reading
 ; ------------------------------------------------------------------
@@ -101,13 +101,6 @@ EXICUTE:
 EXICUTEPROGRAM:				
 				JP 		(HL)
 				RET
-				
-HELP:
-				RST     08H
-				CALL	NEWLINE
-				LD		HL,helpMSG
-				CALL	rPrint
-				JP		CI
 
 NumToHex    	ld 		c, a   		; a = number to convert
             	call 	Num1
@@ -229,13 +222,6 @@ clearCom:
 				POP		HL
 				JP		CI
 				
-signOnMon:		.BYTE	"JB MON V2",LF,CR
-				.BYTE	"H for Help",0
-helpMSG:		.BYTE	"R nn - Read FF bytes from nn00",LF,CR
-				.BYTE	"W nnnn xx - Write byte xx to nnnn",LF,CR
-				.BYTE	"E nnnn	- Run nnnn",LF,CR
-				.BYTE	"E 0100/3 - Basic C/W",LF,CR
-				.BYTE	"Send ihex to load",0
 hPadding		.BYTE	"   "
 lPadding		.BYTE	"  "
 sPadding		.BYTE	"  ",0

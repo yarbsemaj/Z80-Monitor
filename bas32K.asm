@@ -126,9 +126,6 @@ MO      .EQU    24H             ; Missing operand
 HX      .EQU    26H             ; HEX error
 BN      .EQU    28H             ; BIN error
 
-		.ORG 	0100H
-COLD:   JP      STARTB          ; Jump for cold start
-WARM:   JP      WARMST          ; Jump for warm start
 STARTB: 
         LD      IX,0            ; Flag cold start
         JP      CSTART          ; Jump to initialise
@@ -206,10 +203,6 @@ SETTOP: DEC     HL              ; Back one byte
         LD      A,H             ; Get MSB
         SBC     A,D             ; Adjust it
         LD      H,A             ; Re-save
-        PUSH    HL              ; Save bytes free
-        LD      HL,SIGNON       ; Sign-on message
-        CALL    PRS             ; Output string
-        POP     HL              ; Get bytes free back
         CALL    PRNTHL          ; Output amount of free memory
         LD      HL,BFREE        ; " Bytes free" message
         CALL    PRS             ; Output string
@@ -219,11 +212,6 @@ BRKRET: CALL    CLREG           ; Clear registers and stack
         JP      PRNTOK          ; Go to get command line
 
 BFREE:  .BYTE   " Bytes free",CR,LF,0,0
-
-SIGNON: .BYTE   "Z80 BASIC Ver 4.7b",CR,LF
-        .BYTE   "Copyright ",40,"C",41
-        .BYTE   " 1978 by Microsoft",CR,LF,0,0
-
 MEMMSG: .BYTE   "Memory top",0
 
 ; FUNCTION ADDRESS TABLE
