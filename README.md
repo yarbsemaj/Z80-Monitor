@@ -1,6 +1,8 @@
 # Z80-Monitor
 A simple BIOS, Monitor and integrated iHEX loader for an RC2014 Compatible Z80 based SBC
 
+![image](https://user-images.githubusercontent.com/17494632/215326183-d598051d-9583-4652-bb46-ada0f44dd8de.png)
+
 ### How to use
 `R nn` Dumps out `0xFF` bites of memory starting at address `0xnn00`.
 `W nnnn xx` Write byte `xx` to address `0xnnnn`.
