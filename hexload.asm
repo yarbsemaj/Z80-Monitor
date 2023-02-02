@@ -35,8 +35,6 @@ endload:
             ld a,c          ; C checksum should be 0
             or a
             jr NZ,badck     ; non zero, we have an issue
-            ld hl,loadokstr
-            call rPrint
             jp CI			; Return to monitor
 
 invtype:
@@ -71,8 +69,6 @@ readnibble:
             ret C           ; if A<10 just return
             sub 7           ; else subtract 'A'-'0' (17) and add 10
             ret
-			
-invalidtypestr:     .BYTE 10,13,"Bad Type",10,13,0
-badchecksumstr:     .BYTE 10,13,"Bad CS",10,13,0
-loadokstr:          .BYTE 10,13,"Ok",10,13,0
+invalidtypestr:
+badchecksumstr:     .BYTE 10,13,"Er",10,13,0
 .END

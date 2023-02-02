@@ -20,8 +20,6 @@ READCOMMAND:
 				JR      Z, WRITE
 				CP      'E'
 				JR    	Z, EXICUTE
-				CP      'H'
-				JR      Z, HELP
 				JR		READCOMMAND
 ; Input reading
 ; ------------------------------------------------------------------
@@ -33,7 +31,6 @@ rCmd:
 				LD		H, A		; fill with 00 for now
 				LD		L, 0H
 				PUSH 	HL
-				LD		B, 0H		; B is used for line position
 				CALL 	NEWLINE
 				CALL	memHeader
 				CALL 	NEWLINE
@@ -100,14 +97,8 @@ EXICUTE:
 				JP		CI
 EXICUTEPROGRAM:				
 				JP 		(HL)
-				RET
+				;RET    Program Should Return
 				
-HELP:
-				RST     08H
-				CALL	NEWLINE
-				LD		HL,helpMSG
-				CALL	rPrint
-				JP		CI
 
 NumToHex    	ld 		c, a   		; a = number to convert
             	call 	Num1
@@ -128,8 +119,9 @@ Num2        	or 		$F0
             	ret
 
 memHeader:
-				LD		HL, hPadding
-				CALL	rPrint
+				LD		B, 7
+				CALL	printSpacing
+				LD		B, 0H		; B is used for line position
 memHeaderLoop:	LD		A, B
 				CP 		BytesPerLine
 				RET    	Z
@@ -166,16 +158,12 @@ LINESTART:
 				CALL	NumToHex
 				LD		A, L
 				CALL	NumToHex
-				PUSH	HL
-				LD		HL, sPadding
-				CALL	rPrint
-				POP		HL
+				LD		B,2					;2 Spaces
+				CALL	printSpacing
 				RET
 ENDBLOCK:
-				PUSH	HL
-				LD		HL, lPadding
-				CALL	rPrint
-				POP		HL
+				LD		B,5					;5 Spaces
+				CALL	printSpacing
 				LD		A,L					;Start printing line again, this time in asci
 				LD 		B, 0H
 				SUB 	BytesPerLine
@@ -183,8 +171,8 @@ ENDBLOCK:
 PRINTASCICHAR:	
 				INC		B			
 				LD		A, (HL)
-				AND		11100000b			;Exclude unprintable chars
-				JR		Z,NONPRINTABLE
+				CP		37				;Exclude unprintable chars
+				JR		C,NONPRINTABLE
 				LD		A, (HL)
 				JR		PRINTCHAR
 				
@@ -228,14 +216,11 @@ CHECKVALID:
 clearCom:
 				POP		HL
 				JP		CI
+
+printSpacing:
+				LD 		A, ' '
+				RST     08H
+				DJNZ	printSpacing
+				RET
 				
-signOnMon:		.BYTE	"JB MON V2",LF,CR
-				.BYTE	"H for Help",0
-helpMSG:		.BYTE	"R nn - Read FF bytes from nn00",LF,CR
-				.BYTE	"W nnnn xx - Write byte xx to nnnn",LF,CR
-				.BYTE	"E nnnn	- Run nnnn",LF,CR
-				.BYTE	"E 0100/3 - Basic C/W",LF,CR
-				.BYTE	"Send ihex to load",0
-hPadding		.BYTE	"   "
-lPadding		.BYTE	"  "
-sPadding		.BYTE	"  ",0
+signOnMon:		.BYTE	"JB Monitor",LF,CR,0
