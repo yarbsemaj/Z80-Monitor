@@ -31,6 +31,7 @@ rCmd:
 				LD		H, A		; fill with 00 for now
 				LD		L, 0H
 				PUSH 	HL
+				LD		B, 0H		; B is used for line position
 				CALL 	NEWLINE
 				CALL	memHeader
 				CALL 	NEWLINE

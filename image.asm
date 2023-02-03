@@ -42,7 +42,7 @@ saveColPos:
 printByte:
     LD      C, (HL)             ;Load in the data into C for safe keeping
     LD      A, C                ;Move it into A so we can work on it
-    LD      B, 3                ;Setup the loop to pogress through the byte
+    LD      B, 4                ;Setup the loop to pogress through the byte
 bytePrintLoop:
     PUSH    BC                  ;Save the position of the byte progress loop to the stack
 printIChar:                     ;prints the char indexed in A
