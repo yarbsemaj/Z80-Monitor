@@ -80,11 +80,13 @@ WRITE:
 				LD		H,A			;Coppy first address byte
 				CALL	READBYTEM
 				LD		L,A			;Coppy second address byte
+writeLoop:
 				LD		A, ' '
 				RST     08H
 				CALL	READBYTEM
 				LD		(HL),A
-				JP		CI
+				INC		HL
+				JR		writeLoop
 EXICUTE:
 				RST     08H
 				LD		A, ' '
@@ -224,4 +226,4 @@ printSpacing:
 				DJNZ	printSpacing
 				RET
 				
-signOnMon:		.BYTE	"JB Monitor",LF,CR,0
+signOnMon:		.BYTE	"JB Monitor v3.0",LF,CR,0
