@@ -165,7 +165,7 @@ LINESTART:
 				CALL	printSpacing
 				RET
 ENDBLOCK:
-				LD		B,5					;5 Spaces
+				LD		B,4					;5 Spaces
 				CALL	printSpacing
 				LD		A,L					;Start printing line again, this time in asci
 				LD 		B, 0H
@@ -174,8 +174,10 @@ ENDBLOCK:
 PRINTASCICHAR:	
 				INC		B			
 				LD		A, (HL)
-				CP		37				;Exclude unprintable chars
+				CP		32				;Exclude unprintable chars
 				JR		C,NONPRINTABLE
+				CP		127				;Exclude unprintable chars
+				JR		NC,NONPRINTABLE
 				LD		A, (HL)
 				JR		PRINTCHAR
 				
@@ -226,4 +228,4 @@ printSpacing:
 				DJNZ	printSpacing
 				RET
 				
-signOnMon:		.BYTE	"JB Monitor v3.0",LF,CR,0
+signOnMon:		.BYTE	"JB Monitor v3.1",LF,CR,0
