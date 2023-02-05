@@ -5,7 +5,9 @@ A simple BIOS, Monitor and integrated iHEX loader for an RC2014 Compatible Z80 b
 
 ### How to use
 `R nn` Dumps out `0xFF` bites of memory starting at address `0xnn00`.
+
 `W nnnn` Write bytes starting from address `0xnnnn` until a break is sent.
+
 `E nnnn` Runs a program starting at address `0xnnnn`.
 
 #### Start Basic
