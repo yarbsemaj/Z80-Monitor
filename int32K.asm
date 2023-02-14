@@ -59,9 +59,6 @@ RST10            JP      RXA
                 .ORG 0018H
 RST18            JP      CKINCHAR
 
-SIGNON1:       .BYTE     CR,LF
-               .BYTE     "Z80 SBC by yarbsemaj",CR,LF,0
-
 ;------------------------------------------------------------------------------
 ; RST 38 - INTERRUPT VECTOR [ for IM 1 ]
 
@@ -162,3 +159,6 @@ START:
                LD        HL,SIGNON1      ; Sign-on message
                CALL      rPrint           ; Output string
 			   JP		 StartMon		 ; Start Monitor
+               
+SIGNON1:       .BYTE     CR,LF
+               .BYTE     "Z80 SBC By Grant S",CR,LF,0

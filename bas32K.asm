@@ -126,10 +126,6 @@ MO      .EQU    24H             ; Missing operand
 HX      .EQU    26H             ; HEX error
 BN      .EQU    28H             ; BIN error
 
-SIGNON: .BYTE   "BASIC",CR,LF
-        .BYTE   "(C) 1978 Microsoft",CR,LF,0,0
-BFREE:  .BYTE   " free",CR,LF,0,0
-
 		.ORG 	0100H
 COLD:   JP      STARTB          ; Jump for cold start
 WARM:   JP      WARMST          ; Jump for warm start
@@ -159,8 +155,13 @@ COPY:   LD      A,(DE)          ; Get source
         CALL    PRNTCRLF        ; Output CRLF
         LD      (BUFFER+72+1),A ; Mark end of buffer
         LD      (PROGST),A      ; Initialise program area
-MSIZE:  LD      HL,STLOOK       ; Point to start of RAM
-        
+MSIZE:  LD      HL,MEMMSG       ; Point to message
+        CALL    PRS             ; Output "Memory size"
+        CALL    PROMPT          ; Get input with '?'
+        CALL    GETCHR          ; Get next character
+        OR      A               ; Set flags
+        JP      NZ,TSTMEM       ; If number - Test if RAM there
+        LD      HL,STLOOK       ; Point to start of RAM
 MLOOP:  INC     HL              ; Next byte
         LD      A,H             ; Above address FFFF ?
         OR      L
@@ -216,6 +217,14 @@ SETTOP: DEC     HL              ; Back one byte
 WARMST: LD      SP,STACK        ; Temporary stack
 BRKRET: CALL    CLREG           ; Clear registers and stack
         JP      PRNTOK          ; Go to get command line
+
+BFREE:  .BYTE   " Bytes free",CR,LF,0,0
+
+SIGNON: .BYTE   "Z80 BASIC Ver 4.7b",CR,LF
+        .BYTE   "Copyright ",40,"C",41
+        .BYTE   " 1978 by Microsoft",CR,LF,0,0
+
+MEMMSG: .BYTE   "Memory top",0
 
 ; FUNCTION ADDRESS TABLE
 
@@ -4328,4 +4337,3 @@ OUTNCR: CALL    OUTC            ; Output character in A
         JP      PRNTCRLF        ; Output CRLF
 
 .end
-
