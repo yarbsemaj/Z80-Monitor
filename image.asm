@@ -1,3 +1,4 @@
+            .ORG    1EC6H
 decompress	.EQU	0A000H		;Old Stack Location 
 rows        .EQU	32
 cols        .EQU	32/4

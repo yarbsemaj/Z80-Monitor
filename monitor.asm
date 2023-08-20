@@ -1,6 +1,6 @@
 CR              .EQU    0DH
 LF              .EQU    0AH
-BytesPerLine	.EQU	10H
+BytesPerLine	.EQU	08H
 
 StartMon:
 				LD		HL,signOnMon
@@ -27,18 +27,21 @@ rCmd:
 				RST     08H
 				LD		A, ' '
 				RST     08H
+				CALL 	READBYTEM ; Read Start Byte
+				LD		H, A
 				CALL 	READBYTEM
-				LD		H, A		; fill with 00 for now
-				LD		L, 0H
-				PUSH 	HL
+				LD		L, A
+				LD		A, '.'
+				RST     08H
+				CALL 	READBYTEM  ; Read End Byte
+				LD		D, A
+				CALL 	READBYTEM
+				LD		E, A
+				INC 	DE			;Increment end byte for zero compear
 				LD		B, 0H		; B is used for line position
-				CALL 	NEWLINE
-				CALL	memHeader
-				CALL 	NEWLINE
-				CALL 	NEWLINE
-				LD		B, 0H		; B is used for line position
-				POP		HL
+				CALL	NEWLINE
 				CALL	LINESTART
+				PUSH	HL
 				JP		PRINTMEM
 				JR		CI
 
@@ -50,10 +53,12 @@ READBYTEM:							; Reads a byte in hex from the console
          		add  	a,a
          		add  	a,a
          		add  	a,a
+				PUSH	DE
          		ld   	d,a
          		call 	READNIBBLEM
          		call 	Hex1M
          		or   	d
+				POP		DE
          		ret
 
 READNIBBLEM:
@@ -120,35 +125,29 @@ Num2        	or 		$F0
             	add 	a, $A0
             	adc 	a, $40 		; Ascii hex at this point (0 to F)   
             	ret
-
-memHeader:
-				LD		B, 7
-				CALL	printSpacing
-				LD		B, 0H		; B is used for line position
-memHeaderLoop:	LD		A, B
-				CP 		BytesPerLine
-				RET    	Z
-				CALL	NumToHex
-				LD		A, ' '
-				RST     08H
-				INC		B
-				JR		memHeaderLoop
 				
 PRINTMEM:
 				LD		A, B
 				CP 		BytesPerLine
-				CALL    Z, ENDLINE
-				LD		A, ' '
+				JR    	NZ, NEXTMEMCHAR
+				POP		HL
+				CALL	ENDLINE
+				PUSH    HL
+				LD		B, 0
+NEXTMEMCHAR:	LD		A, ' '
 				RST     08H
 				LD		A,(HL)
 				CALL	NumToHex
-				INC		L
-				LD		A, L
-				CP		$00
-				JR		Z,ENDMEMPRINT		; JP on 255
+				INC		HL
+				PUSH	HL
+				OR 		A					; Clear Carry Flag for SUBC
+				SBC		HL,DE
+				POP		HL
+				JR		Z,ENDMEMPRINT		; JP on end
 				INC		B
 				JR		PRINTMEM			; JP NEXT CHAR
 ENDMEMPRINT:
+				POP		HL
 				CALL	ENDBLOCK
 				JP		CI			
 
@@ -161,16 +160,14 @@ LINESTART:
 				CALL	NumToHex
 				LD		A, L
 				CALL	NumToHex
-				LD		B,2					;2 Spaces
-				CALL	printSpacing
+				LD		A, ' '
+				RST     08H
 				RET
 ENDBLOCK:
-				LD		B,4					;5 Spaces
+				LD		B,2					;2 Spaces
 				CALL	printSpacing
-				LD		A,L					;Start printing line again, this time in asci
-				LD 		B, 0H
-				SUB 	BytesPerLine
-				LD		L, A
+				LD		B, 0
+
 PRINTASCICHAR:	
 				INC		B			
 				LD		A, (HL)
@@ -185,11 +182,21 @@ NONPRINTABLE:
 				LD		A, '.'
 PRINTCHAR:		
 				RST     08H
-				INC		L
+				INC		HL
+
+
+				PUSH	HL
+				OR 		A					; Clear Carry Flag for SUBC
+				SBC		HL,DE
+				POP		HL
+				JR    	Z, FINISHPRINTCHAR	; JP on end
+
+
 				LD		A, B
 				CP 		BytesPerLine
 				JR    	NZ, PRINTASCICHAR
-				LD 		B, 0H
+
+FINISHPRINTCHAR:
 				CALL	NEWLINE
 				RET
 
@@ -220,6 +227,7 @@ CHECKVALID:
 				JP		READNIBBLEM
 clearCom:
 				POP		HL
+				POP		HL
 				JP		CI
 
 printSpacing:
@@ -228,4 +236,4 @@ printSpacing:
 				DJNZ	printSpacing
 				RET
 				
-signOnMon:		.BYTE	"JB Monitor v3.1",LF,CR,0
+signOnMon:		.BYTE	"JB Monitor v4.0",LF,CR,0

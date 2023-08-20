@@ -126,8 +126,8 @@ MO      .EQU    24H             ; Missing operand
 HX      .EQU    26H             ; HEX error
 BN      .EQU    28H             ; BIN error
 
-SIGNON: .BYTE   "BASIC",CR,LF
-        .BYTE   "(C) 1978 Microsoft",CR,LF,0,0
+SIGNON: .BYTE   "Microsoft Basic 4.7",CR,LF
+        .BYTE   "(C) 1978",CR,LF,0
 BFREE:  .BYTE   " free",CR,LF,0,0
 
 		.ORG 	0100H
